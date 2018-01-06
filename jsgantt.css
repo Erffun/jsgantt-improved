@@ -161,10 +161,10 @@ div.gtaskbarcontainer		{ z-index: 1; position: absolute; top: 0px }
 
 .JSGanttToolTip		{position: absolute; display: block; z-index: 2;}
 .JSGanttToolTipcont	{font-family: tahoma, arial, verdana; font-size: 10px; display: block; background: #ffffff; color: #656565}
-.gTaskInfo			{background: #dbecff; width: 400px; border: #656565 1px solid; border-radius: 10px; padding: 4px 6px 4px 6px; float: left;}
-.gTtTitle			{display: block; font-size: 12px; font-weight: bold; color: #404040; margin-left: 4px; margin-bottom: 1em;}
-.gTaskLabel 		{font-size: 11px; font-weight: bold; color: #656565; margin-left: 4px;}
-.gTaskText	 		{position:absolute; left: 90px; padding-top: 1px; font-size: 10px; font-weight: normal; color: #656565;}
+.gTaskInfo			{background: #FFF; width: 200px; box-shadow: 3px 3px 11px 0px #333; border-radius: 2px; padding: 4px 6px 4px 6px; float: left;}
+.gTtTitle			{display: block; font-size: 12px; font-weight: bold; color: #333; margin-left: 4px; margin-bottom: 1em;}
+.gTaskLabel 		{font-size: 11px; font-weight: bold; color: #333; margin-left: 4px;}
+.gTaskText	 		{position:absolute; left: 90px; padding-top: 1px; font-size: 10px; font-weight: normal; color: #666;}
 .gTaskNotes 		{font-size: 11px; font-weight: normal; color: #323232; padding: 0 15px; display: block;}
 .gTIn	 			{padding-top: 10px;}
 
@@ -230,6 +230,7 @@ td.gspanning div { *overflow: hidden; } /* stops resizing fixed width columns if
 .gitemquarter td		{ background-size: 19px 1px; background-image: linear-gradient(to left, #efefef, transparent 1px, transparent 18px); width: 100%; height: 19px; }
 */
 
-.material-icons{
-	font-size:18px;
+.gchartcontainer .material-icons{
+	font-size:16px;
+	cursor:pointer;	
 }
