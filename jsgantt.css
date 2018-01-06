@@ -42,7 +42,7 @@ td.gspanning				{ border-left: none; border-right: none; }
 .genddate					{ text-align: center; min-width: 70px; max-width: 70px; width: 70px; font-size: 10px; }
 .gtaskheading				{ text-align: center; }
 .gtaskname div, /* needed for IE8 */
-.gtaskname					{ min-width: 170px; max-width: 170px; width: 170px; font-size: 9px; border-left: none; }
+.gtaskname					{ min-width: 170px; max-width: 170px; width: 170px; font-size: 9pt; border-left: none; }
 
 .gselector					{ text-align: left; white-space: nowrap; min-width: 170px; max-width: 170px; width: 170px; }
 
@@ -55,6 +55,10 @@ span.gfoldercollapse		{ color:#000000; cursor:pointer; font-weight:bold; font-si
 .gtasktableh,
 .gtasktable					{ border-right: #efefef 1px solid; }
 .gcharttable				{ border: #efefef 1px solid; }  /* for some reason firefox needs this */
+.gcharttable,
+.gcharttableh{
+    width:100% !important;
+}
 
 /* Differentiate Group, Milestone and Ordinary task items (applied to row) */
 .ggroupitem					{ background-color: #fbfbfb; font-weight: bold; }
@@ -159,7 +163,7 @@ span.gfoldercollapse		{ color:#000000; cursor:pointer; font-weight:bold; font-si
 
 div.gtaskbarcontainer		{ z-index: 1; position: absolute; top: 0px }
 
-.JSGanttToolTip		{position: absolute; display: block; z-index: 2;}
+.JSGanttToolTip		{position: absolute; display: block; z-index: 2000;}
 .JSGanttToolTipcont	{font-family: tahoma, arial, verdana; font-size: 10px; display: block; background: #ffffff; color: #656565}
 .gTaskInfo			{background: #FFF; width: 200px; box-shadow: 3px 3px 11px 0px #333; border-radius: 2px; padding: 4px 6px 4px 6px; float: left;}
 .gTtTitle			{display: block; font-size: 12px; font-weight: bold; color: #333; margin-left: 4px; margin-bottom: 1em;}
@@ -169,10 +173,10 @@ div.gtaskbarcontainer		{ z-index: 1; position: absolute; top: 0px }
 .gTIn	 			{padding-top: 10px;}
 
 .gantt				{ min-width: 632px;	/* 2x LC width */ }
-.gchartcontainer	{ /* padding-left: 532px; LC width */ line-height: 1; /* Overrides inherited CSS (e.g. from Bootstrap) */ }
+.gchartcontainer	{ /* padding-left: 532px; LC width */ line-height: 1; /* Overrides inherited CSS (e.g. from Bootstrap) */ overflow: auto; width: 100%;}
 .gcontainercol		{ position: relative; } /* Add a max-height value here if wanted */
-.glistgrid			{ width: 532px; /* LC width */ float: left; /* LC width */ padding-right: 0px; padding-left: 0px; padding-bottom: 0px; padding-top: 0px; background-color: #ffffff; overflow: hidden; }
-.glistlbl			{ width: 532px; /* LC width */ float: left; /* LC width */ padding-right: 0px; padding-left: 0px; padding-bottom: 0px; padding-top: 0px; background-color: #ffffff; overflow: hidden; }
+.glistgrid			{ float: left; /* LC width */ padding-right: 0px; padding-left: 0px; padding-bottom: 0px; padding-top: 0px; background-color: #ffffff; overflow: hidden; }
+.glistlbl			{ float: left; /* LC width */ padding-right: 0px; padding-left: 0px; padding-bottom: 0px; padding-top: 0px; background-color: #ffffff; overflow: hidden; }
 .glabelfooter		{ clear: both; }
 .ggridfooter		{ clear: both; }
 
@@ -233,4 +237,8 @@ td.gspanning div { *overflow: hidden; } /* stops resizing fixed width columns if
 .gchartcontainer .material-icons{
 	font-size:16px;
 	cursor:pointer;	
+}
+
+table{
+    border-collapse: collapse;
 }
