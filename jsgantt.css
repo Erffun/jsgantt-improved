@@ -239,6 +239,11 @@ td.gspanning div { *overflow: hidden; } /* stops resizing fixed width columns if
 	cursor:pointer;	
 }
 
+.gtask-item{
+	min-width:5px;
+	border-radius: 3px;
+}
+
 table{
     border-collapse: collapse;
 }

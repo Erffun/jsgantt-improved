@@ -75,7 +75,7 @@ JSGantt.isIE = function () {
 	else return false;
 };
 
-JSGantt.TaskItem = function (pID, pName, pStart, pEnd, pClass, pLink, pMile, pRes, pComp, pGroup, pParent, pOpen, pDepend, pCaption, pNotes, pGantt) {
+JSGantt.TaskItem = function (pID, pName, pStart, pEnd, pClass, pLink, pMile, pRes, pComp, pGroup, pParent, pOpen, pDepend, pCaption, pNotes, pColor, pGantt) {
 
 	var vID = parseInt(document.createTextNode(pID).data);
 	var vName = document.createTextNode(pName).data;
@@ -84,6 +84,7 @@ JSGantt.TaskItem = function (pID, pName, pStart, pEnd, pClass, pLink, pMile, pRe
 	var vGroupMinStart = null;
 	var vGroupMinEnd = null;
 	var vClass = document.createTextNode(pClass).data;
+	var vColor = document.createTextNode(pColor).data;
 	var vLink = document.createTextNode(pLink).data;
 	var vMile = parseInt(document.createTextNode(pMile).data);
 	var vRes = document.createTextNode(pRes).data;
@@ -165,6 +166,7 @@ JSGantt.TaskItem = function (pID, pName, pStart, pEnd, pClass, pLink, pMile, pRe
 	this.getGroupMinStart = function () { return vGroupMinStart; };
 	this.getGroupMinEnd = function () { return vGroupMinEnd; };
 	this.getClass = function () { return vClass; };
+	this.getColor = function () { return vColor; };
 	this.getLink = function () { return vLink; };
 	this.getMile = function () { return vMile; };
 	this.getDepend = function () { if (vDepend) return vDepend; else return null; };
@@ -638,7 +640,7 @@ JSGantt.GanttChart = function (pDiv, pFormat) {
 		return -1;
 	};
 
-	this.newNode = function (pParent, pNodeType, pId, pClass, pText, pWidth, pLeft, pDisplay, pColspan, pAttribs) {
+	this.newNode = function (pParent, pNodeType, pId, pClass, pText, pWidth, pLeft, pDisplay, pColspan, pAttribs, pColor) {
 		var vNewNode = pParent.appendChild(document.createElement(pNodeType));
 		if (pAttribs) {
 			for (var i = 0; i + 1 < pAttribs.length; i += 2) {
@@ -648,6 +650,7 @@ JSGantt.GanttChart = function (pDiv, pFormat) {
 		// I wish I could do this with setAttribute but older IEs don't play nice
 		if (pId) vNewNode.id = pId;
 		if (pClass) vNewNode.className = pClass;
+		if (pColor) vNewNode.style.backgroundColor = pColor;
 		if (pWidth) vNewNode.style.width = (isNaN(pWidth * 1)) ? pWidth : pWidth + 'px';
 		if (pLeft) vNewNode.style.left = (isNaN(pLeft * 1)) ? pLeft : pLeft + 'px';
 		if (pText) vNewNode.appendChild(document.createTextNode(pText));
@@ -692,7 +695,7 @@ JSGantt.GanttChart = function (pDiv, pFormat) {
 			else if (vFormat == 'week') vColWidth = vWeekColWidth;
 			else if (vFormat == 'month') vColWidth = vMonthColWidth;
 			else if (vFormat == 'quarter') vColWidth = vQuarterColWidth;
-			else if (vFormat == 'hour') vColWidth = vHourColWidth;
+			else if (vFormat == 'hour') vColWidth = this.getHourColWidth();//vHourColWidth;
 
 			// DRAW the Left-side of the chart (names, resources, comp%)
 			var vLeftHeader = document.createDocumentFragment();
@@ -972,7 +975,7 @@ JSGantt.GanttChart = function (pDiv, pFormat) {
 					vTmpDiv = this.newNode(vTmpCell, 'div', null, 'gtaskcelldiv', '\u00A0\u00A0');
 					vTmpDiv = this.newNode(vTmpDiv, 'div', vDivId + 'bardiv_' + vID, 'gtaskbarcontainer', null, 12, vTaskLeftPx - 6);
 					vTaskList[i].setBarDiv(vTmpDiv);
-					vTmpDiv2 = this.newNode(vTmpDiv, 'div', vDivId + 'taskbar_' + vID, vTaskList[i].getClass(), null, 12);
+					vTmpDiv2 = this.newNode(vTmpDiv, 'div', vDivId + 'taskbar_' + vID, 'gtask-item ' + vTaskList[i].getClass(), null, 12, "", "", "", "", vTaskList[i].getColor());
 					vTaskList[i].setTaskDiv(vTmpDiv2);
 
 					if (vTaskList[i].getCompVal() < 100)
@@ -1011,7 +1014,7 @@ JSGantt.GanttChart = function (pDiv, pFormat) {
 						if (vTaskList[i].getGroup() == 1) {
 							vTmpDiv = this.newNode(vTmpDiv, 'div', vDivId + 'bardiv_' + vID, 'gtaskbarcontainer', null, vTaskWidth, vTaskLeftPx);
 							vTaskList[i].setBarDiv(vTmpDiv);
-							vTmpDiv2 = this.newNode(vTmpDiv, 'div', vDivId + 'taskbar_' + vID, vTaskList[i].getClass(), null, vTaskWidth);
+							vTmpDiv2 = this.newNode(vTmpDiv, 'div', vDivId + 'taskbar_' + vID, 'gtask-item ' + vTaskList[i].getClass(), null, vTaskWidth, "", "", "", "", vTaskList[i].getColor());
 							vTaskList[i].setTaskDiv(vTmpDiv2);
 
 							this.newNode(vTmpDiv2, 'div', vDivId + 'complete_' + vID, vTaskList[i].getClass() + 'complete', null, vTaskList[i].getCompStr());
@@ -1047,7 +1050,7 @@ JSGantt.GanttChart = function (pDiv, pFormat) {
 						// Draw Task Bar which has colored bar div, and opaque completion div
 						vTmpDiv = this.newNode(vTmpDiv, 'div', vDivId + 'bardiv_' + vID, 'gtaskbarcontainer', null, vTaskWidth, vTaskLeftPx);
 						vTaskList[i].setBarDiv(vTmpDiv);
-						vTmpDiv2 = this.newNode(vTmpDiv, 'div', vDivId + 'taskbar_' + vID, vTaskList[i].getClass(), null, vTaskWidth);
+						vTmpDiv2 = this.newNode(vTmpDiv, 'div', vDivId + 'taskbar_' + vID, 'gtask-item ' + vTaskList[i].getClass(), null, vTaskWidth, "", "", "", "", vTaskList[i].getColor());
 						vTaskList[i].setTaskDiv(vTmpDiv2);
 						this.newNode(vTmpDiv2, 'div', vDivId + 'complete_' + vID, vTaskList[i].getClass() + 'complete', null, vTaskList[i].getCompStr());
 
