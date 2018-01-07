@@ -690,12 +690,15 @@ JSGantt.GanttChart = function (pDiv, pFormat) {
 			vMinDate = JSGantt.getMinDate(vTaskList, vFormat);
 			vMaxDate = JSGantt.getMaxDate(vTaskList, vFormat);
 
+			while (vDiv.hasChildNodes()) vDiv.removeChild(vDiv.firstChild);
+			divContainerTemp = this.newNode(vDiv, 'div', null, 'gchartcontainer');
+
 			// Calculate chart width variables.
 			if (vFormat == 'day') vColWidth = vDayColWidth;
 			else if (vFormat == 'week') vColWidth = vWeekColWidth;
 			else if (vFormat == 'month') vColWidth = vMonthColWidth;
 			else if (vFormat == 'quarter') vColWidth = vQuarterColWidth;
-			else if (vFormat == 'hour') vColWidth = this.getHourColWidth();//vHourColWidth;
+			else if (vFormat == 'hour') vColWidth = vHourColWidth;
 
 			// DRAW the Left-side of the chart (names, resources, comp%)
 			var vLeftHeader = document.createDocumentFragment();
@@ -782,6 +785,8 @@ JSGantt.GanttChart = function (pDiv, pFormat) {
 				}
 			}
 
+			divContainerTemp.appendChild(vLeftHeader);
+
 			// DRAW the date format selector at bottom left.
 			vTmpRow = this.newNode(vTmpTBody, 'tr');
 			this.newNode(vTmpRow, 'td', null, 'gtasklist', '\u00A0');
@@ -811,6 +816,19 @@ JSGantt.GanttChart = function (pDiv, pFormat) {
 			vTmpDate.setMinutes(0);
 			vTmpDate.setSeconds(0);
 			vTmpDate.setMilliseconds(0);
+
+			if (vFormat == 'hour') {
+				var parentWidth = divContainerTemp.clientWidth;
+				var rightPaneWidth = divContainerTemp.children[0].clientWidth;
+				//debugger;
+
+				vColSpan = (24 - vTmpDate.getHours());
+				if (vTmpDate.getFullYear() == vMaxDate.getFullYear() &&
+					vTmpDate.getMonth() == vMaxDate.getMonth() &&
+					vTmpDate.getDate() == vMaxDate.getDate()) vColSpan -= (23 - vMaxDate.getHours());
+
+				vColWidth = (parentWidth - rightPaneWidth) / vColSpan;
+			}
 
 			var vColSpan = 1;
 			// Major Date Header
@@ -848,10 +866,20 @@ JSGantt.GanttChart = function (pDiv, pFormat) {
 					vTmpDate.setFullYear(vTmpDate.getFullYear() + 1, 0, 1);
 				}
 				else if (vFormat == 'hour') {
+
+					var parentWidth = divContainerTemp.clientWidth;
+					var rightPaneWidth = divContainerTemp.children[0].clientWidth;
+					//debugger;
+
 					vColSpan = (24 - vTmpDate.getHours());
 					if (vTmpDate.getFullYear() == vMaxDate.getFullYear() &&
 						vTmpDate.getMonth() == vMaxDate.getMonth() &&
 						vTmpDate.getDate() == vMaxDate.getDate()) vColSpan -= (23 - vMaxDate.getHours());
+
+					vColWidth = (parentWidth - rightPaneWidth) / vColSpan;
+
+					//vColWidth = 60;
+
 					vTmpCell = this.newNode(vTmpRow, 'td', null, vHeaderCellClass, null, null, null, null, vColSpan);
 					this.newNode(vTmpCell, 'div', null, null, JSGantt.formatDateStr(vTmpDate, vHourMajorDateDisplayFormat, vLangs[vLang]), vColWidth * vColSpan);
 					vTmpDate.setHours(0);
@@ -958,7 +986,7 @@ JSGantt.GanttChart = function (pDiv, pFormat) {
 				if ((curTaskEnd.getTime() - (curTaskEnd.getTimezoneOffset() * 60000)) % (86400000) == 0) curTaskEnd = new Date(curTaskEnd.getFullYear(), curTaskEnd.getMonth(), curTaskEnd.getDate() + 1, curTaskEnd.getHours(), curTaskEnd.getMinutes(), curTaskEnd.getSeconds()); // add 1 day here to simplify calculations below
 
 				vTaskLeftPx = JSGantt.getOffset(vMinDate, curTaskStart, vColWidth, vFormat);
-				vTaskRightPx = JSGantt.getOffset(curTaskStart, curTaskEnd, vColWidth, vFormat);
+				vTaskRightPx = JSGantt.getOffset(curTaskStart, curTaskEnd, vColWidth , vFormat);
 
 				vID = vTaskList[i].getID();
 				var vComb = (vTaskList[i].getParItem() && vTaskList[i].getParItem().getGroup() == 2);
@@ -1088,13 +1116,11 @@ JSGantt.GanttChart = function (pDiv, pFormat) {
 
 			if (!vSingleCell) vTmpTBody.appendChild(vDateRow.cloneNode(true));
 
-			while (vDiv.hasChildNodes()) vDiv.removeChild(vDiv.firstChild);
-			vTmpDiv = this.newNode(vDiv, 'div', null, 'gchartcontainer');
-			vTmpDiv.appendChild(vLeftHeader);
-			vTmpDiv.appendChild(vRightHeader);
-			vTmpDiv.appendChild(vLeftTable);
-			vTmpDiv.appendChild(vRightTable);
-			this.newNode(vTmpDiv, 'div', null, 'ggridfooter');
+
+			divContainerTemp.appendChild(vRightHeader);
+			divContainerTemp.appendChild(vLeftTable);
+			divContainerTemp.appendChild(vRightTable);
+			this.newNode(divContainerTemp, 'div', null, 'ggridfooter');
 			vTmpDiv2 = this.newNode(this.getChartBody(), 'div', vDivId + 'Lines', 'glinediv');
 			vTmpDiv2.style.visibility = 'hidden';
 			this.setLines(vTmpDiv2);
@@ -1517,8 +1543,8 @@ JSGantt.getOffset = function (pStartDate, pEndDate, pColWidth, pFormat) {
 	var curTaskStart = new Date(pStartDate.getTime());
 	var curTaskEnd = new Date(pEndDate.getTime());
 	var vTaskRightPx = 0;
-	var tmpTaskStart = Date.UTC(curTaskStart.getFullYear(), curTaskStart.getMonth(), curTaskStart.getDate(), curTaskStart.getHours(), 0, 0);
-	var tmpTaskEnd = Date.UTC(curTaskEnd.getFullYear(), curTaskEnd.getMonth(), curTaskEnd.getDate(), curTaskEnd.getHours(), 0, 0);
+	var tmpTaskStart = Date.UTC(curTaskStart.getFullYear(), curTaskStart.getMonth(), curTaskStart.getDate(), curTaskStart.getHours(), curTaskStart.getMinutes(), 0);
+	var tmpTaskEnd = Date.UTC(curTaskEnd.getFullYear(), curTaskEnd.getMonth(), curTaskEnd.getDate(), curTaskEnd.getHours(), curTaskEnd.getMinutes(), 0);
 
 	var vTaskRight = (tmpTaskEnd - tmpTaskStart) / 3600000; // Length of task in hours
 
